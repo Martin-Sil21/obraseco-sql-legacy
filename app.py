@@ -196,17 +196,17 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(60)
 
+print("Iniciando aplicacion...")
+
+if SUPABASE_URL and SUPABASE_KEY:
+    print("Iniciando sincronizacion inicial...")
+    Thread(target=sync_catalog_to_supabase).start()
+
+    print("Iniciando scheduler de sincronizacion cada 8 horas...")
+    Thread(target=run_scheduler, daemon=True).start()
+else:
+    print("Supabase no configurado - Solo búsqueda disponible")
+
+# Esto sí queda dentro del bloque MAIN si querés usarlo local:
 if __name__ == "__main__":
-    print("Iniciando aplicacion...")
-    
-    # Sincronizacion inicial
-    if SUPABASE_URL and SUPABASE_KEY:
-        print("Iniciando sincronizacion inicial...")
-        Thread(target=sync_catalog_to_supabase).start()
-        
-        print("Iniciando scheduler de sincronizacion cada 8 horas...")
-        Thread(target=run_scheduler, daemon=True).start()
-    else:
-        print("Supabase no configurado - Solo busqueda disponible")
-    
     app.run(host="0.0.0.0", port=5000)
